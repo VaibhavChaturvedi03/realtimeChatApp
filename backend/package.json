@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start":"node src/server.js"
+    "start": "node src/server.js"
   },
   "keywords": [],
   "author": "vaibhav",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
