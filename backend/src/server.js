@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/auth.route.js";
+import userRoutes from "./routes/user.route.js";
 import messageRoutes from "./routes/message.route.js";
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(express.static("public")) // to serve static files like profile pictures
 app.use(cookieParser()) // we will be sending access token in cookie, so we need to use cookie parser middleware to parse the cookies from the request, after using this middleware we can access cookies using req.cookies
 
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/messages', messageRoutes);
 
 const PORT = process.env.PORT || 8080;
