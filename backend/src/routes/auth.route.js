@@ -5,15 +5,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js"
 
 const router = Router();
 
-router.route("/signup").post(
-    upload.fields([
-        {
-            name: "profilePic",
-            maxCount: 1
-        },
-    ]),
-    signupUser
-)
+router.route("/signup").post(signupUser)
 
 router.route("/login").post(loginUser)
 

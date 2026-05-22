@@ -1,7 +1,9 @@
+import "dotenv/config";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { sendWelcomeEmail } from "../emails/emailHandler.js";
 import { User } from "../models/user.model.js"
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
@@ -40,6 +42,10 @@ const signupUser = asyncHandler(async (req, res) => {
     ){
         throw new ApiError(400, "All fields are required")
     }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
     
     // checking if user with email already exists
     const existedUser = await User.findOne({email})
@@ -48,18 +54,11 @@ const signupUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with email already exists")
     }
 
-    // checking if avatar and cover image are uploaded or not
-    const ProfilePicLocalPath = req.files?.profilePic[0]?.path
-
-    // if profile picture is uploaded then we will upload it on cloudinary and get the url of uploaded profile picture and save that url in database, if profile picture is not uploaded then we will save empty string in database for profile picture
-    const profilePic = await uploadOnCloudinary(ProfilePicLocalPath)
-
     // creating user in database
     const user = await User.create({
         fullName,
         email,
-        password,
-        profilePic: profilePic?.url 
+        password 
     })
 
     // checking if user is created or not
@@ -69,6 +68,13 @@ const signupUser = asyncHandler(async (req, res) => {
 
     if (!createdUser) {
         throw new ApiError(500, "something went wrong while creating user")
+    }
+
+    // sending welcome email to user
+    try{
+        await sendWelcomeEmail(user.email, user.fullName, process.env.CLIENT_URL);
+    }catch(error){
+        throw new ApiError(500, "Failed to send welcome email")
     }
 
     // sending response
