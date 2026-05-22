@@ -19,7 +19,12 @@ const userSchema = new Schema(
         },
         password: {
             type: String,
+            minlength: 6,
             required: [true, 'Password is required']
+        },
+        profilePic: {
+            type: String,
+            default: ""
         },
         refreshToken: {
             type: String // we are saving refresh token in database to verify it when user sends request to generate new access token using refresh token, if we find the refresh token in database then only we will generate new access token for user
@@ -46,7 +51,8 @@ userSchema.methods.generateAccessToken = function () {
             _id: this._id,
             email: this.email,
             username: this.username,
-            fullName: this.fullName
+            fullName: this.fullName,
+            profilePic: this.profilePic
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
